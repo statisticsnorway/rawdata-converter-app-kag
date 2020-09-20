@@ -3,7 +3,7 @@
   "name": "root",
   "fields": [
     {
-      "name": "karakterer",
+      "name": "resultater",
       "type": {
         "type": "array",
         "items": {

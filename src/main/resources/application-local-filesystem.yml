@@ -18,7 +18,6 @@ rawdata.client:
     sync.interval: 500000
   filesystem:
     storage-folder: ./rawdata-store
-    #storage-folder: ../localenv/rawdatastore
   listing:
     min-interval-seconds: 0
 
@@ -27,7 +26,7 @@ rawdata.converter:
   dryrun: false
   storage-type: local
   storage-root: file://../localenv/datastore
-  storage-path: /kilde/karakterer/raadata/v1
+  storage-path: /kilde/kag/karakter/raadata/202009191130
   storage-version: 1598553650000
   service-account-key-file: ../localenv/auth/gcs/dev-sirius/gcs_credentials.json
   topic: kag-karakter-test
@@ -36,6 +35,14 @@ rawdata.converter:
   initial-position: LAST
   schema-metrics-enabled: true
   dataset-type: BOUNDED
+
+  pseudo:
+    config:
+      debug: true
+      rules:
+        fodselsnummer:
+          pattern: '**/{Fødselsnummer}'
+          func: fpe-fnr(secret1)
 
   dataset-meta:
     valuation: INTERNAL

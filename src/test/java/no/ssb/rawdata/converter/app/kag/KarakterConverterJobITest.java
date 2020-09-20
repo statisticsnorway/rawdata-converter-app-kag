@@ -30,7 +30,8 @@ public class KarakterConverterJobITest extends ConverterJobIntegrationTestBase {
         rawdataConverterConfig.setDatasetType(Type.BOUNDED);
 
         KagRawdataConverterConfig kagRawdataConverterConfig = new KagRawdataConverterConfig();
-        kagRawdataConverterConfig.setSchemaFileKarakter("schema/karakter.avsc");
+        kagRawdataConverterConfig.setSource("karakter");
+        kagRawdataConverterConfig.setSchemaFile("schema/karakter.avsc");
         kagRawdataConverterConfig.getCsvSettings().put("delimiters", "|");
         RawdataConverter converter = new KagRawdataConverter(kagRawdataConverterConfig);
 

@@ -4,7 +4,6 @@ import io.micronaut.context.annotation.ConfigurationProperties;
 import io.micronaut.core.convert.format.MapFormat;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,10 +12,14 @@ import java.util.Map;
 public class KagRawdataConverterConfig {
 
     /**
-     * The name of the karakter avro schema to use
+     * The source name such as "karakter", "resultat", ...
      */
-    @NotBlank
-    private String schemaFileKarakter;
+    private String source;
+
+    /**
+     * The name of the avro schema to use for payload data
+     */
+    private String schemaFile;
 
     /**
      * Optional csv parser settings overrides.

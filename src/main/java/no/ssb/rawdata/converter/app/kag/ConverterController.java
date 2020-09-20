@@ -16,6 +16,7 @@ import no.ssb.rawdata.converter.core.RawdataConverterConfig;
 import no.ssb.rawdata.converter.core.ValueInterceptorChain;
 import no.ssb.rawdata.converter.core.job.ConverterJobScheduler;
 import no.ssb.rawdata.converter.core.metrics.SchemaMetricsPublisher;
+import no.ssb.rawdata.converter.core.pseudo.PseudoService;
 
 import javax.ws.rs.core.MediaType;
 
@@ -27,6 +28,7 @@ public class ConverterController {
     private final RawdataConsumerFactory rawdataConsumerFactory;
     private final ConverterJobScheduler jobScheduler;
     private final SchemaMetricsPublisher schemaMetricsPublisher;
+    private final PseudoService pseudoService;
 
     @Async
     @ExecuteOn(TaskExecutors.IO)
@@ -42,6 +44,8 @@ public class ConverterController {
         if (job.getRawdataConverterConfig().isSchemaMetricsEnabled()) {
             valueInterceptorChain.register(schemaMetricsPublisher::notifyFieldConverted);
         }
+
+        valueInterceptorChain.register(pseudoService::pseudonymize);
 
         RawdataConverter converter = new KagRawdataConverter(job.getKagRawdataConverterConfig(), valueInterceptorChain);
         return converter;
