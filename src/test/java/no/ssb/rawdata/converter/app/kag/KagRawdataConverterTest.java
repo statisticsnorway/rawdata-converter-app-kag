@@ -22,7 +22,6 @@ public class KagRawdataConverterTest {
         RawdataMessages messages = fixtures.rawdataMessages("kag-karakter-test");
         KagRawdataConverterConfig config = new KagRawdataConverterConfig();
         config.setSource("karakter");
-        config.setSchemaFile("schema/karakter.avsc");
         KagRawdataConverter converter = new KagRawdataConverter(config);
         ConversionResult result = converter.convert(messages.index().get("position-3"));
         System.out.println(result.getGenericRecord().toString());

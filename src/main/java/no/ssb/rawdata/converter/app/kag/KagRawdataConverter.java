@@ -6,10 +6,12 @@ import no.ssb.avro.convert.csv.CsvToRecords;
 import no.ssb.avro.convert.csv.InconsistentCsvDataException;
 import no.ssb.avro.convert.json.Json;
 import no.ssb.rawdata.api.RawdataMessage;
+import no.ssb.rawdata.converter.app.kag.schema.CsvSchemaInfo;
 import no.ssb.rawdata.converter.core.AbstractRawdataConverter;
 import no.ssb.rawdata.converter.core.ConversionResult;
 import no.ssb.rawdata.converter.core.ValueInterceptorChain;
 import no.ssb.rawdata.converter.core.schema.AggregateSchemaBuilder;
+import no.ssb.rawdata.converter.core.util.RawdataMessageFacade;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.generic.GenericRecordBuilder;
@@ -26,6 +28,7 @@ public class KagRawdataConverter extends AbstractRawdataConverter {
     private final Schema metadataSchema;
     private final KagRawdataConverterConfig converterConfig;
     private final ValueInterceptorChain valueInterceptorChain;
+    private final SourceInfo source;
 
     private static final String RAWDATA_ITEMNAME_ENTRY = "entry";
     private static final String FIELDNAME_METADATA = "metadata";
@@ -38,6 +41,7 @@ public class KagRawdataConverter extends AbstractRawdataConverter {
         this.converterConfig = converterConfig;
         this.metadataSchema = readAvroSchema("schema/message-metadata.avsc");
         this.valueInterceptorChain = valueInterceptorChain;
+        this.source = Sources.of(converterConfig.getSource());
 
         if (! converterConfig.getCsvSettings().isEmpty()) {
             log.info("Overridden CSV parser settings:\n{}", Json.prettyFrom(converterConfig.getCsvSettings()));
@@ -46,7 +50,7 @@ public class KagRawdataConverter extends AbstractRawdataConverter {
 
     @Override
     public Schema targetAvroSchema() {
-        CsvSchemaInfo schemaInfo = getSchemaInfo();
+        CsvSchemaInfo schemaInfo = source.getCsvSchemaInfo();
         AggregateSchemaBuilder builder = new AggregateSchemaBuilder("no.ssb.dapla.kilde.kag.rawdata")
           .schema(FIELDNAME_METADATA, metadataSchema)
           .schema(schemaInfo.getTargetFieldname(), schemaInfo.getTargetSchema());
@@ -68,29 +72,16 @@ public class KagRawdataConverter extends AbstractRawdataConverter {
     @Override
     public ConversionResult convert(RawdataMessage rawdataMessage) {
         ConversionResult.ConversionResultBuilder resultBuilder = ConversionResult.builder(new GenericRecordBuilder(targetAvroSchema()));
-
+        RawdataMessageFacade.print(rawdataMessage);
         // Add metadata about the message
         addMetadata(rawdataMessage, resultBuilder);
 
         // Convert the payload
-        CsvSchemaInfo schemaInfo = getSchemaInfo();
+        CsvSchemaInfo schemaInfo = source.getCsvSchemaInfo();
         convertCsvData(rawdataMessage, schemaInfo, resultBuilder);
 
+        System.out.println(resultBuilder.build().getGenericRecord().toString());
         return resultBuilder.build();
-    }
-
-    CsvSchemaInfo getSchemaInfo() {
-        Schema schema = readAvroSchema(converterConfig.getSchemaFile());
-        String source = converterConfig.getSource();
-        if ("karakter".equalsIgnoreCase(source)) {
-            return new CsvSchemaInfo("karakter", schema, "karakterer", "linje");
-        }
-        else if ("resultat".equalsIgnoreCase(source)) {
-            return new CsvSchemaInfo("resultat", schema, "resultater", "linje");
-        }
-        else {
-            throw new IllegalArgumentException("Unknown KAG source: " + source);
-        }
     }
 
     void addMetadata(RawdataMessage rawdataMessage, ConversionResult.ConversionResultBuilder resultBuilder) {

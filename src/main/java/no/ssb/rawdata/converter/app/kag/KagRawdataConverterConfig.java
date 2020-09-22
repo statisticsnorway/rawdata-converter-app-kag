@@ -17,11 +17,6 @@ public class KagRawdataConverterConfig {
     private String source;
 
     /**
-     * The name of the avro schema to use for payload data
-     */
-    private String schemaFile;
-
-    /**
      * Optional csv parser settings overrides.
      * E.g. allowing to explicitly specify the delimiter character
      */

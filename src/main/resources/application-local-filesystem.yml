@@ -41,8 +41,14 @@ rawdata.converter:
       debug: true
       rules:
         fodselsnummer:
-          pattern: '**/{Fødselsnummer}'
+          pattern: '**/{Fødselsnummer,Fnr,MorFnr,FarFnr}'
           func: fpe-fnr(secret1)
+        snr:
+          pattern: '**/{Snr,SnrNudb,MorSnr,FarSnr}'
+          func: fpe-fnr(secret1)
+        navn:
+          pattern: '**/{Elevnavn}'
+          func: fpe-anychar(secret1)
 
   dataset-meta:
     valuation: INTERNAL
