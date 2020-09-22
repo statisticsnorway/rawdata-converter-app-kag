@@ -72,7 +72,6 @@ public class KagRawdataConverter extends AbstractRawdataConverter {
     @Override
     public ConversionResult convert(RawdataMessage rawdataMessage) {
         ConversionResult.ConversionResultBuilder resultBuilder = ConversionResult.builder(new GenericRecordBuilder(targetAvroSchema()));
-        RawdataMessageFacade.print(rawdataMessage);
         // Add metadata about the message
         addMetadata(rawdataMessage, resultBuilder);
 
@@ -80,7 +79,6 @@ public class KagRawdataConverter extends AbstractRawdataConverter {
         CsvSchemaInfo schemaInfo = source.getCsvSchemaInfo();
         convertCsvData(rawdataMessage, schemaInfo, resultBuilder);
 
-        System.out.println(resultBuilder.build().getGenericRecord().toString());
         return resultBuilder.build();
     }
 
